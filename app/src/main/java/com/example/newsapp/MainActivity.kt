@@ -12,15 +12,15 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var adapter: NewsAdapter
+    lateinit var mAdapter: NewsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         recycleView.layoutManager = LinearLayoutManager(this)
-        adapter = NewsAdapter()
+        mAdapter = NewsAdapter()
         fetchNews()
-        recycleView.adapter = adapter
+        recycleView.adapter = mAdapter
 
     }
 
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call<News>, response: Response<News>) {
                 if(response.body() != null){
-                    adapter.setNewsListItems(response.body()!!.articles)
+                    mAdapter.setNewsListItems(response.body()!!.articles)
                 }
             }
 
