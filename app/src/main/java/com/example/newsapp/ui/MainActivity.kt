@@ -1,30 +1,50 @@
-package com.example.newsapp
+package com.example.newsapp.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.newsapp.R
 import com.example.newsapp.networking.NewsService
+import com.example.newsapp.repository.NewsRepository
+import com.example.newsapp.viewModel.NewsViewModel
+import com.example.newsapp.viewModel.NewsViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    lateinit var viewModel: NewsViewModel
     lateinit var mAdapter: NewsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val newsService = NewsService.getInstance()
+        val newsRepository = NewsRepository(newsService)
         recycleView.layoutManager = LinearLayoutManager(this)
         mAdapter = NewsAdapter()
-        fetchNews()
         recycleView.adapter = mAdapter
+
+        viewModel = ViewModelProvider(this, NewsViewModelFactory(newsRepository)).get(NewsViewModel::class.java)
+
+
+        observeData()
+
+        viewModel.getNews()
+
 
     }
 
-    private fun fetchNews() {
+    private fun observeData(){
+        viewModel.news.observe(this, {
+            mAdapter.setNewsListItems(it)
+
+        })
+    }
+
+    /*
+    private suspend fun fetchNews() {
         val news = NewsService.getRetrofit().getHeadlines("us" , "business")
         news.enqueue(object : Callback<News>{
             /*
@@ -51,5 +71,7 @@ class MainActivity : AppCompatActivity() {
 
         })
     }
+
+     */
 
 }

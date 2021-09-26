@@ -1,4 +1,4 @@
-package com.example.newsapp
+package com.example.newsapp.ui
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,10 +7,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.newsapp.R
+import com.example.newsapp.models.Articles
 
 class NewsAdapter() : RecyclerView.Adapter<NewsViewHolder>(){
 
-    var articlesList : List<Articles> = listOf()
+    var articlesList : MutableList<Articles> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_news, parent, false)
@@ -29,8 +31,9 @@ class NewsAdapter() : RecyclerView.Adapter<NewsViewHolder>(){
     }
 
     fun setNewsListItems(movieList: List<Articles>){
-        this.articlesList = movieList;
-        notifyDataSetChanged()
+        articlesList.clear()
+        articlesList.addAll(0, movieList)
+        notifyItemChanged(0)
     }
 
 
