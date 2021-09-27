@@ -2,76 +2,47 @@ package com.example.newsapp.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import com.example.newsapp.R
 import com.example.newsapp.networking.NewsService
 import com.example.newsapp.repository.NewsRepository
-import com.example.newsapp.viewModel.NewsViewModel
+import com.example.newsapp.utils.NewsPagerAdapter
 import com.example.newsapp.viewModel.NewsViewModelFactory
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var viewModel: NewsViewModel
-    lateinit var mAdapter: NewsAdapter
+    lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val newsService = NewsService.getInstance()
-        val newsRepository = NewsRepository(newsService)
-        recycleView.layoutManager = LinearLayoutManager(this)
-        mAdapter = NewsAdapter()
-        recycleView.adapter = mAdapter
 
-        viewModel = ViewModelProvider(this, NewsViewModelFactory(newsRepository)).get(NewsViewModel::class.java)
+        val tabList = listOf("Business" , "Science" , "Sports" , "Technology")
 
+        val list = ArrayList<Fragment>()
+        list.add(BusinessFragment())
+        list.add(ScienceFragment())
+        list.add(SportsFragment())
+        list.add(TechFragment())
 
-        observeData()
-
-        viewModel.getNews()
-
+        viewPager.adapter = NewsPagerAdapter(supportFragmentManager , lifecycle , list)
+        TabLayoutMediator(tabs, viewPager) { tab, position ->
+            tab.text = tabList[position]
+        }.attach()
 
     }
 
-    private fun observeData(){
-        viewModel.news.observe(this, {
-            mAdapter.setNewsListItems(it)
-
-        })
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
-
-    /*
-    private suspend fun fetchNews() {
-        val news = NewsService.getRetrofit().getHeadlines("us" , "business")
-        news.enqueue(object : Callback<News>{
-            /*
-            override fun onResponse(call: Call<List<Articles>>?, response: Response<List<Articles>>?) {
-                if(response?.body() != null)
-                    adapter.setNewsListItems(response.body()!!)
-            }
-
-            override fun onFailure(call: Call<List<Articles>>, t: Throwable) {
-                Log.d("MainActivity" , "Error while connecting to internet" , t)
-            }
-
-             */
-
-            override fun onResponse(call: Call<News>, response: Response<News>) {
-                if(response.body() != null){
-                    mAdapter.setNewsListItems(response.body()!!.articles)
-                }
-            }
-
-            override fun onFailure(call: Call<News>, t: Throwable) {
-                Log.d("MainActivity" , "Error fetching from Internet" , t)
-            }
-
-        })
-    }
-
-     */
-
 }

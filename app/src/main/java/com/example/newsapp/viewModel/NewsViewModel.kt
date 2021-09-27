@@ -19,14 +19,11 @@ class NewsViewModel(private val  newsRepository: NewsRepository) : ViewModel() {
 
     var news = MutableLiveData<List<Articles>>()
 
-    fun getNews() {
-        Log.d("Aman","reaching news")
+    fun getNews(country : String , category : String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val response = newsRepository.getNews()
+            val response = newsRepository.getNews(country,category)
             withContext(Dispatchers.Main){
-                Log.d("Aman" , "network call ${Gson().toJson(response)}")
                 if(response.isSuccessful){
-                    Log.d("Aman" , "getting list ${Gson().toJson(response.body())}")
                     news.value = response.body()!!.articles
                 }else{
                     Log.d("Aman" , "Error fetching data")

@@ -5,5 +5,6 @@ import com.example.newsapp.networking.NewsService
 
 class NewsRepository(private val newsInstance: NewsInstance) {
 
-    suspend fun getNews() = newsInstance.getHeadlines("us" , "science")
+    suspend fun getNews(country : String , category : String) = newsInstance.getHeadlines(country , category)
+
 }
